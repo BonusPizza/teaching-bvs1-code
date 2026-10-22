@@ -1,33 +1,31 @@
 # BVS1 – Betriebssysteme: Course Code
 
-This is the student code repository for **BVS1 – Betriebssysteme** at TH Köln, ICCT.
+This branch is the **Checkpoint 1 process scaffold**.
 
-The repository starts with a deliberately minimal RV64 program that prints:
+## What is provided
 
-```text
-Hello BVS1
-```
+- `start.S` and `linker.ld`;
+- UART string output in the starter;
+- `context.h`: the saved RV64 CPU context representation;
+- `context.S`: the provided `context_switch(current_context, next_context)`;
+- Make/QEMU integration.
 
-It will grow throughout the semester into a small educational operating system.
+## What is deliberately not provided
 
-## Course Workflow
+There is no:
 
-Clone this repository **once** inside the Ubuntu 26.04 course VM:
+- `process.h`;
+- `process.c`;
+- `libprocess.a`;
+- implementation of `process_create()`, `process_run()`, `process_yield()`, or `process_exit()`.
 
-```bash
-git clone https://github.com/stavroskousidis/teaching-bvs1-code.git
-cd teaching-bvs1-code
-```
+For Checkpoint 1, the C-level process abstraction is your work.
 
-No GitHub account is required.
+Reuse the `process.h` that you created in Exercise 02 and implement its process API in `process.c`. Then reuse your Exercise 02 permutation application unchanged: with the provided library removed, the same application should run against your own implementation.
 
-Your clone is your local semester repository. Keep it throughout the course and commit meaningful working states locally.
+The build automatically compiles C files that you add at the repository root, so adding `process.c` and `process.h` does not require changing the source list.
 
-Do not push your work to this repository, and do not pull new course states unless explicitly instructed.
-
-Local Git history is **not a backup**. Keep regular copies of your repository or a Git bundle outside the course VM, especially before checkpoints. Lab 0 describes the supported backup procedure.
-
-## Check, Build, and Run
+## Build and run
 
 ```bash
 make check
@@ -35,33 +33,10 @@ make
 make run
 ```
 
-Expected guest output:
+Exit QEMU with **Ctrl-a**, release the keys, then press **x**.
 
-```text
-Hello BVS1
-```
-
-No guest prompt appears afterwards. This is expected: the starter target contains neither an operating system nor a shell. QEMU remains the foreground process in the Ubuntu development VM.
-
-Exit QEMU with **Ctrl-a**, release the keys, then press **x**. The development-VM shell prompt should then return.
-
-Useful inspection targets:
-
-```bash
-make inspect
-make disasm
-```
-
-Generated files are written to `build/`.
+The mandatory checkpoint is an individual demonstration: your process must yield, resume the same execution, finish, and return control to the operating system. You must also be able to explain how your implementation uses the provided context-switch boundary.
 
 ## Environment
 
-The supported development environment is the course-provided Ubuntu 26.04 VM named `bvs1`. Complete Lab 0 before using this repository; `make check` is the environment gate.
-
-Inside that VM:
-
-- Git and Make manage the local code and build,
-- the RISC-V cross-toolchain produces RV64 code,
-- QEMU emulates the RV64 `virt` teaching machine.
-
-The initial guest program contains **no operating system**. That is the starting point of the course.
+Use the course-provided Ubuntu 26.04 VM.
