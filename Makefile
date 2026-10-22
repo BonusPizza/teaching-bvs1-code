@@ -8,6 +8,15 @@ BUILD_DIR := build
 ELF := $(BUILD_DIR)/hello-bvs1.elf
 MAP := $(BUILD_DIR)/hello-bvs1.map
 DISASM := $(BUILD_DIR)/hello-bvs1.disasm
+PROCESS_LIB := lib/libprocess.a
+
+# Exercise 02 provides the process API as a precompiled RV64 library.
+# context.S stays visible because the low-level context-switch boundary is
+# course material. Student C files remain ordinary sources at the repo root.
+C_SOURCES := $(sort $(wildcard *.c))
+ASM_SOURCES := start.S context.S
+HEADERS := $(sort $(wildcard *.h))
+SOURCES := $(ASM_SOURCES) $(C_SOURCES)
 
 CFLAGS := \
 	-march=rv64imac \
@@ -44,14 +53,16 @@ check:
 	@command -v $(SIZE) >/dev/null 2>&1 || { echo "Missing tool: $(SIZE)"; exit 1; }
 	@command -v $(QEMU) >/dev/null 2>&1 || { echo "Missing tool: $(QEMU)"; exit 1; }
 	@command -v file >/dev/null 2>&1 || { echo "Missing tool: file"; exit 1; }
+	@test -f $(PROCESS_LIB) || { echo "Missing provided process library: $(PROCESS_LIB)"; exit 1; }
 	@$(QEMU) --machine help | grep -q "virt" || { echo "QEMU does not provide the RISC-V virt machine."; exit 1; }
 	@echo "Environment OK."
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(ELF): start.S main.c linker.ld | $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) start.S main.c -o $@
+$(ELF): $(SOURCES) $(HEADERS) $(PROCESS_LIB) linker.ld | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) $(PROCESS_LIB) -o $@
+
 
 run: all
 	@echo "Starting bare RV64 machine. Exit QEMU with Ctrl-a, then x."

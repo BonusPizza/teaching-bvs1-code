@@ -2,13 +2,33 @@
 
 This is the student code repository for **BVS1 – Betriebssysteme** at TH Köln, ICCT.
 
-The repository starts with a deliberately minimal RV64 program that prints:
+## Exercise 02 — Using Your First Process
 
-```text
-Hello BVS1
+This branch provides a **precompiled process implementation** so you can define and use its C interface before implementing the abstraction yourself for Checkpoint 1.
+
+Provided:
+
+- `lib/libprocess.a`: a precompiled RV64 implementation of `process_create()`, `process_run()`, `process_yield()`, and `process_exit()`;
+- `context.h` and `context.S`: the visible low-level context-switch boundary;
+- startup, linker, UART, build, and QEMU support.
+
+Not provided:
+
+- the C source that implements the process API.
+
+There is intentionally **no `process.h` and no `process.c` implementation** on this branch. You create the public header during Exercise 02; the implementation is linked from `lib/libprocess.a`.
+
+The exercise asks you to write an entry function and helper that perform a deterministic permutation of a local character array, yield while the helper is active, resume the same execution, and print the resulting permutation.
+
+Use:
+
+```bash
+make
+make run
 ```
 
-It will grow throughout the semester into a small educational operating system.
+
+For Checkpoint 1, the provided process library disappears and you implement the C-level process abstraction yourself around the same provided `context_switch()`.
 
 ## Course Workflow
 
@@ -19,15 +39,19 @@ git clone https://github.com/stavroskousidis/teaching-bvs1-code.git
 cd teaching-bvs1-code
 ```
 
-No GitHub account is required.
+Recommended Exercise 02 workflow:
 
-Your clone is your local semester repository. Keep it throughout the course and commit meaningful working states locally.
+```bash
+git fetch origin
+git switch exercise/02-process-use
+git switch -c exercise-02
+```
 
-Do not push your work to this repository, and do not pull new course states unless explicitly instructed.
+Keep your local semester repository and commit meaningful working states. Do not push student work to the course repository.
 
-Local Git history is **not a backup**. Keep regular copies of your repository or a Git bundle outside the course VM, especially before checkpoints. Lab 0 describes the supported backup procedure.
+Local Git history is **not a backup**. Keep regular copies or a Git bundle outside the course VM, especially before checkpoints.
 
-## Check, Build, and Run
+## Build and Run
 
 ```bash
 make check
@@ -35,15 +59,7 @@ make
 make run
 ```
 
-Expected guest output:
-
-```text
-Hello BVS1
-```
-
-No guest prompt appears afterwards. This is expected: the starter target contains neither an operating system nor a shell. QEMU remains the foreground process in the Ubuntu development VM.
-
-Exit QEMU with **Ctrl-a**, release the keys, then press **x**. The development-VM shell prompt should then return.
+Exit QEMU with **Ctrl-a**, release the keys, then press **x**.
 
 Useful inspection targets:
 
@@ -56,12 +72,10 @@ Generated files are written to `build/`.
 
 ## Environment
 
-The supported development environment is the course-provided Ubuntu 26.04 VM named `bvs1`. Complete Lab 0 before using this repository; `make check` is the environment gate.
+The supported development environment is the course-provided Ubuntu 26.04 VM named `bvs1`. Complete Lab 0 before using this repository.
 
 Inside that VM:
 
-- Git and Make manage the local code and build,
-- the RISC-V cross-toolchain produces RV64 code,
+- Git and Make manage the local code and build;
+- the RISC-V cross-toolchain produces RV64 code;
 - QEMU emulates the RV64 `virt` teaching machine.
-
-The initial guest program contains **no operating system**. That is the starting point of the course.
