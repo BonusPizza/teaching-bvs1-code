@@ -28,7 +28,7 @@ static void uart_puts(const char *s)
 
 void main(void)
 {
-    uart_puts("Hello BVS1 from Luca\n");
+    uart_puts("Hello BVS1 from Luca und Vincent\n");
 
     for (;;) {
     }
