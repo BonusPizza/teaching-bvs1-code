@@ -16,8 +16,8 @@ void process_start(void){
 
 void process_create(struct process *process, process_entry_t entry){
 	process->entry = entry;
-	process->context.sp = process->(unint) stack + STACK_SIZE - 1;
-	process->context.ra = process_start;
+	process->context.sp = (uintptr_t) &process->stack[STACK_SIZE];
+	process->context.ra = (uintptr_t) process_start;
 	process->state = READY;
 }
 
@@ -37,7 +37,7 @@ void process_yield(void){
 }
 
 void process_exit(short int status){
-	current_process.status = status;
+	current_process.exit_status = status;
 	current_process.state = FINISHED;
 	context_switch(&(current_process.context), &OS_context);
 }
