@@ -2,8 +2,6 @@
 #include "context.h"
 
 
-
-
 struct process *current_process;
 struct context OS_context;
 
@@ -13,15 +11,12 @@ void process_start(void){
 	process_exit(0);
 }
 
-
 void process_create(struct process *process, process_entry_t entry){
 	process->entry = entry;
 	process->context.sp = (uintptr_t) &process->stack[STACK_SIZE];
 	process->context.ra = (uintptr_t) process_start;
 	process->state = READY;
 }
-
-
 
 void process_run(struct process *process){
 	if(process->state != FINISHED){
@@ -41,4 +36,3 @@ void process_exit(short int status){
 	current_process->state = FINISHED;
 	context_switch(&(current_process->context), &OS_context);
 }
-

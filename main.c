@@ -27,22 +27,49 @@ static void uart_puts(const char *s)
     }
 }
 
-void hello(){
-    uart_puts("HelloBVS1 form Vinc und Luc\n");
-    process_yield();
-    uart_puts("genug pause\n");
+static void permute(char value[]) {
+    char tmp;
+    tmp = value[0];
+    value[0] = value[1];
+    value [1] = tmp;
 
+    uart_puts("process: before yield: ");
+    uart_puts(value);
+    uart_puts("\n");
+
+    process_yield();
+
+    tmp = value[2];
+    value[2] = value[3];
+    value[3] = tmp;
 }
 
-void main(void)
-{
-struct process a;
-process_create(&a, hello);
+static void worker(void) {
+    char value[] = "bvs1";
 
-process_run(&a);
-process_run(&a);
+    permute(value);
 
-uart_puts("zurück");
+    uart_puts("process: result: ");
+    uart_puts(value);
+    uart_puts("\n");
+}
+
+
+void main(void) {
+
+    uart_puts("os: booted\n");
+
+    struct process p;
+    process_create(&p, worker);
+    uart_puts("os: process created\n");
+
+    process_run(&p);
+    uart_puts("os: process yielded\n");
+
+    process_run(&p);
+    uart_puts("os: process exited with code: ");
+    uart_putc('0' + p.exit_status);
+    uart_puts("\n");
 
     for (;;) {}
 }
