@@ -16,6 +16,31 @@ static void uart_putc(char c)
     uart0[UART_THR] = (uint8_t)c;
 }
 
+static int rev(int i){
+    int rev = 0;
+    while(i > 0){
+	rev = (rev * 10) + (i % 10);
+	i /= 10;
+    }
+    return rev;
+}
+
+static void uart_puti(int i){
+    if(i == 0){
+	uart_putc('0');
+	return;
+    }
+    if(i < 0){
+	uart_putc('-');
+	i /= -1;
+    }
+    i = rev(i);
+    while(i > 0){
+	uart_putc('0' + (i % 10));
+	i /= 10;
+    }
+}
+
 static void uart_puts(const char *s)
 {
     while (*s != '\0') {
@@ -68,7 +93,7 @@ void main(void) {
 
     process_run(&p);
     uart_puts("os: process exited with code: ");
-    uart_putc('0' + p.exit_status);
+    uart_puti(p.exit_status);
     uart_puts("\n");
 
     for (;;) {}
