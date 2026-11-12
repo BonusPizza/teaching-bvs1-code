@@ -34,10 +34,10 @@ static inline uint64_t timer_now(void)
     return *CLINT_MTIME;
 }
 
-/* Request the next timer interrupt `ticks` mtime ticks from now. */
-static inline void timer_arm(uint64_t ticks)
+/* Request the next timer interrupt `delta` mtime counts from now. */
+static inline void timer_arm(uint64_t delta)
 {
-    *CLINT_MTIMECMP0 = *CLINT_MTIME + ticks;
+    *CLINT_MTIMECMP0 = *CLINT_MTIME + delta;
 }
 
 #endif

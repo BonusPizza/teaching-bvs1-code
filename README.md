@@ -2,38 +2,42 @@
 
 This is the student code repository for **BVS1 – Betriebssysteme** at TH Köln, ICCT.
 
-## Exercise 04 — One Trap Path
+## Exercise 05 — The Timer Path
 
-This branch moves the Exercise 2 application onto the trap path from Lecture 5. Control now enters the OS through the hardware: `process_yield()` and `process_exit()` execute `ecall`, and the OS runs inside `trap_handler()`.
+This branch runs your Exercise 04 application against an OS that takes timer interrupts (Lecture 6). A process that never yields now loses the CPU every time slice: the CLINT requests a timer interrupt, the CPU enters the same trap path as for an `ecall`, and the OS gets control back without the process's help.
 
 Provided:
 
-- `lib/libkernel.a`: a precompiled RV64 OS with the process table, `process_create()`, `trap_handler()` and `os_run()`;
-- `trap.h` and `trap.S`: the visible trap path (`trap_entry`) and return path (`os_start()`);
-- `syscall.h` and `syscall.c`: the system-call numbers and the `ecall` stubs behind `process_yield()` and `process_exit()`;
-- `riscv.h`: CSR access and `mcause` codes;
-- `uart.h` and `uart.c`: UART output shared by the OS and your application;
-- startup, linker, build, and QEMU support.
+- `lib/libkernel.a`: the Exercise 05 OS: it arms the timer, takes timer interrupts and prints one line per tick (`os: tick N at <pc> in process 1`);
+- `lib/libkernel-ex04.a`: the Exercise 04 OS, without the timer, for comparison;
+- `lib/broken/libkernel-a.a`, `libkernel-b.a`, `libkernel-c.a`: three OS libraries with one defect each in their timer path (Task 5);
+- `riscv.h`: CSR access, `mcause` codes, and the CLINT timer (`timer_now()`, `timer_arm(delta)`);
+- `trap.h`, `trap.S`, `syscall.h`, `syscall.c`, `uart.h`, `uart.c`: unchanged from Exercise 04;
+- startup, linker, build, and QEMU support. `make run` starts QEMU with `-icount shift=4,sleep=off`, so that timer interrupts land at the same instructions in every run.
 
-Not provided:
+Not provided: `process.h`; you bring it, together with your `main.c`, from your Exercise 04 work branch. The sheet tells you which process to add to `main.c`.
 
-- `process.h`: you bring your Exercise 2 header and change it in three places;
-- the C source of the OS.
-
-`context.h`, `context.S` and `lib/libprocess.a` from Exercise 2 are gone. The cooperative `context_switch()` stays on the Exercise 2 and Checkpoint 1 branches.
-
-Bring your Exercise 2 files onto a local work branch:
+Bring your Exercise 04 files onto a local work branch:
 
 ```bash
 git fetch origin
-git switch exercise/04-trap-path
-git switch -c exercise-04
-git checkout exercise-02 -- process.h main.c
+git switch exercise/05-timer
+git switch -c exercise-05
+git checkout exercise-04 -- process.h main.c
 ```
 
-Do not bring a `process.c` from your Checkpoint 1 work: the Makefile compiles every root-level C file, and a second process implementation clashes with `lib/libkernel.a`.
+Do not bring a `process.c`: the Makefile compiles every root-level C file, and a second process implementation clashes with the provided library.
 
-For Checkpoint 2, the provided kernel library disappears and you implement the OS side yourself around the same provided `trap.S`, extended by timer interrupts and a scheduler.
+Choose the OS library with `KERNEL`; the program is relinked when it changes:
+
+```bash
+make run                 # Exercise 05 library
+make run KERNEL=ex04     # Exercise 04 library
+make run KERNEL=a        # broken library A (also b, c)
+make run ICOUNT=         # without -icount: QEMU follows host time
+```
+
+For Checkpoint 2, the provided kernel library disappears and you implement the OS side yourself around the same provided `trap.S`, including the timer and a scheduler.
 
 ## Course Workflow
 
@@ -44,12 +48,12 @@ git clone https://github.com/stavroskousidis/teaching-bvs1-code.git
 cd teaching-bvs1-code
 ```
 
-Recommended Exercise 04 workflow:
+Recommended Exercise 05 workflow:
 
 ```bash
 git fetch origin
-git switch exercise/04-trap-path
-git switch -c exercise-04
+git switch exercise/05-timer
+git switch -c exercise-05
 ```
 
 Keep your local semester repository and commit meaningful working states. Do not push student work to the course repository.
@@ -64,7 +68,7 @@ make
 make run
 ```
 
-Exit QEMU with **Ctrl-a**, release the keys, then press **x**.
+`make run` uses the library selected by `KERNEL` (default: `ex05`). Exit QEMU with **Ctrl-a**, release the keys, then press **x**.
 
 Useful inspection targets:
 
