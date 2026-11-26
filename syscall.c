@@ -23,11 +23,6 @@ static long syscall2(long number, long arg0, long arg1)
     return a0;
 }
 
-void process_yield(void)
-{
-    syscall2(SYS_YIELD, 0, 0);
-}
-
 void process_exit(int status)
 {
     syscall2(SYS_EXIT, status, 0);

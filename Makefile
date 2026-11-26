@@ -9,23 +9,19 @@ ELF := $(BUILD_DIR)/hello-bvs1.elf
 MAP := $(BUILD_DIR)/hello-bvs1.map
 DISASM := $(BUILD_DIR)/hello-bvs1.disasm
 
-# Exercise 05 provides the OS as precompiled RV64 libraries. KERNEL selects
+# Exercise 06 provides the OS as precompiled RV64 libraries. KERNEL selects
 # the one to link:
-#   ex05  lib/libkernel.a             timer on, one line per tick (default)
-#   ex04  lib/libkernel-ex04.a        the Exercise 04 OS, no timer
-#   a     lib/broken/libkernel-a.a    broken library A (Task 5)
-#   b     lib/broken/libkernel-b.a    broken library B (Task 5)
-#   c     lib/broken/libkernel-c.a    broken library C (Task 5)
-KERNEL ?= ex05
-KERNEL_LIB_ex05 := lib/libkernel.a
-KERNEL_LIB_ex04 := lib/libkernel-ex04.a
-KERNEL_LIB_a := lib/broken/libkernel-a.a
-KERNEL_LIB_b := lib/broken/libkernel-b.a
-KERNEL_LIB_c := lib/broken/libkernel-c.a
-KERNEL_LIBS := $(KERNEL_LIB_ex05) $(KERNEL_LIB_ex04) $(KERNEL_LIB_a) $(KERNEL_LIB_b) $(KERNEL_LIB_c)
+#   ex06  lib/libkernel.a          the OS asks your schedule() in
+#                                  scheduler.c which process runs next (default)
+#   ex05  lib/libkernel-ex05.a     the Exercise 05 OS with its own round robin,
+#                                  for comparison; it ignores your schedule()
+KERNEL ?= ex06
+KERNEL_LIB_ex06 := lib/libkernel.a
+KERNEL_LIB_ex05 := lib/libkernel-ex05.a
+KERNEL_LIBS := $(KERNEL_LIB_ex06) $(KERNEL_LIB_ex05)
 KERNEL_LIB := $(KERNEL_LIB_$(KERNEL))
 ifeq ($(KERNEL_LIB),)
-$(error KERNEL must be one of ex05, ex04, a, b, c)
+$(error KERNEL must be one of ex06, ex05)
 endif
 
 # Reproducible timer interrupts (Lecture 6): QEMU's virtual time advances

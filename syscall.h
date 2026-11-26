@@ -10,7 +10,7 @@
 
 enum {
     SYS_EXIT  = 0,
-    SYS_YIELD = 1,
+                        /* 1: not used in Exercise 6 and CP2 */
     SYS_WRITE = 2,      /* Lecture 8 extension, required from CP3 on */
 };
 
